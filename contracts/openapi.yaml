@@ -1,0 +1,1235 @@
+openapi: 3.1.0
+info:
+  title: CastCanvas Lab API
+  version: 0.1.0
+  description: |
+    CastCanvas Lab 메인 백엔드 API 계약.
+    이 파일은 FE↔BE 간 인터페이스의 단일 소스다.
+
+    상태 표기:
+    - [implemented] 구현 완료
+    - [planned] MVP 범위 내 미구현
+    - [excluded] MVP 제외
+
+servers:
+  - url: http://localhost:8080
+    description: Local development
+  - url: https://api.castcanvaslab.com
+    description: Production
+
+tags:
+  - name: system
+    description: 시스템 상태
+  - name: auth
+    description: 인증 (회원가입, 로그인, 토큰 갱신)
+  - name: users
+    description: 사용자 프로필
+  - name: workspaces
+    description: 워크스페이스 CRUD
+  - name: canvases
+    description: 캔버스 CRUD
+  - name: nodes
+    description: 노드 메타데이터
+  - name: edges
+    description: 엣지 메타데이터
+  - name: assets
+    description: 파일 업로드 및 에셋 관리
+
+paths:
+
+  # ────────────────────────────────────────────
+  # System
+  # ────────────────────────────────────────────
+
+  /api/v1/system/ping:
+    get:
+      tags: [system]
+      summary: 헬스체크 [implemented]
+      operationId: ping
+      responses:
+        "200":
+          description: 서버 정상
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_String"
+              example:
+                code: SUCCESS
+                message: pong
+                data: pong
+
+  # ────────────────────────────────────────────
+  # Auth
+  # ────────────────────────────────────────────
+
+  /api/v1/auth/signup:
+    post:
+      tags: [auth]
+      summary: 회원가입 [planned]
+      operationId: signup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        "201":
+          description: 가입 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_AuthTokens"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "409":
+          $ref: "#/components/responses/Conflict"
+
+  /api/v1/auth/login:
+    post:
+      tags: [auth]
+      summary: 로그인 [planned]
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_AuthTokens"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/auth/refresh:
+    post:
+      tags: [auth]
+      summary: 액세스 토큰 갱신 [planned]
+      operationId: refresh
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshRequest"
+      responses:
+        "200":
+          description: 갱신 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_AuthTokens"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/auth/logout:
+    post:
+      tags: [auth]
+      summary: 로그아웃 [planned]
+      operationId: logout
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 로그아웃 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_Void"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ────────────────────────────────────────────
+  # Users
+  # ────────────────────────────────────────────
+
+  /api/v1/users/me:
+    get:
+      tags: [users]
+      summary: 내 프로필 조회 [implemented]
+      operationId: getMe
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_UserResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/users/me/nickname:
+    patch:
+      tags: [users]
+      summary: 닉네임 수정 [implemented]
+      operationId: updateNickname
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNicknameRequest"
+      responses:
+        "200":
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_UserResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ────────────────────────────────────────────
+  # Workspaces
+  # ────────────────────────────────────────────
+
+  /api/v1/workspaces:
+    get:
+      tags: [workspaces]
+      summary: 내 워크스페이스 목록 [planned]
+      operationId: listWorkspaces
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_WorkspaceList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+    post:
+      tags: [workspaces]
+      summary: 워크스페이스 생성 [planned]
+      operationId: createWorkspace
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWorkspaceRequest"
+      responses:
+        "201":
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_WorkspaceResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/workspaces/{workspaceId}:
+    get:
+      tags: [workspaces]
+      summary: 워크스페이스 조회 [planned]
+      operationId: getWorkspace
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_WorkspaceResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [workspaces]
+      summary: 워크스페이스 삭제 [planned]
+      operationId: deleteWorkspace
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_Void"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /api/v1/workspaces/{workspaceId}/share:
+    post:
+      tags: [workspaces]
+      summary: 공유 링크 생성 [planned]
+      operationId: createShareLink
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_ShareLink"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  # ────────────────────────────────────────────
+  # Canvases
+  # ────────────────────────────────────────────
+
+  /api/v1/workspaces/{workspaceId}/canvases:
+    get:
+      tags: [canvases]
+      summary: 캔버스 목록 [planned]
+      operationId: listCanvases
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_CanvasList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags: [canvases]
+      summary: 캔버스 생성 [planned]
+      operationId: createCanvas
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCanvasRequest"
+      responses:
+        "201":
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_CanvasResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/workspaces/{workspaceId}/canvases/{canvasId}:
+    get:
+      tags: [canvases]
+      summary: 캔버스 조회 [planned]
+      operationId: getCanvas
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/canvasId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_CanvasResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [canvases]
+      summary: 캔버스 삭제 [planned]
+      operationId: deleteCanvas
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/workspaceId"
+        - $ref: "#/components/parameters/canvasId"
+      responses:
+        "200":
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_Void"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ────────────────────────────────────────────
+  # Nodes
+  # ────────────────────────────────────────────
+
+  /api/v1/canvases/{canvasId}/nodes:
+    get:
+      tags: [nodes]
+      summary: 노드 목록 [planned]
+      operationId: listNodes
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_NodeList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags: [nodes]
+      summary: 노드 생성 [planned]
+      operationId: createNode
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNodeRequest"
+      responses:
+        "201":
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_NodeResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/canvases/{canvasId}/nodes/{nodeId}:
+    patch:
+      tags: [nodes]
+      summary: 노드 수정 [planned]
+      operationId: updateNode
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+        - $ref: "#/components/parameters/nodeId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNodeRequest"
+      responses:
+        "200":
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_NodeResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      tags: [nodes]
+      summary: 노드 삭제 [planned]
+      operationId: deleteNode
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+        - $ref: "#/components/parameters/nodeId"
+      responses:
+        "200":
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_Void"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ────────────────────────────────────────────
+  # Edges
+  # ────────────────────────────────────────────
+
+  /api/v1/canvases/{canvasId}/edges:
+    get:
+      tags: [edges]
+      summary: 엣지 목록 [planned]
+      operationId: listEdges
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_EdgeList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+    post:
+      tags: [edges]
+      summary: 엣지 생성 [planned]
+      operationId: createEdge
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEdgeRequest"
+      responses:
+        "201":
+          description: 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_EdgeResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /api/v1/canvases/{canvasId}/edges/{edgeId}:
+    delete:
+      tags: [edges]
+      summary: 엣지 삭제 [planned]
+      operationId: deleteEdge
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/canvasId"
+        - $ref: "#/components/parameters/edgeId"
+      responses:
+        "200":
+          description: 삭제 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_Void"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  # ────────────────────────────────────────────
+  # Assets
+  # ────────────────────────────────────────────
+
+  /api/v1/assets/upload-url:
+    post:
+      tags: [assets]
+      summary: 서명된 업로드 URL 발급 [planned]
+      operationId: getUploadUrl
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: URL 발급 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_UploadUrlResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /api/v1/assets/confirm:
+    post:
+      tags: [assets]
+      summary: 업로드 완료 확인 [planned]
+      operationId: confirmUpload
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmUploadRequest"
+      responses:
+        "201":
+          description: 에셋 등록 성공
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_AssetResponse"
+        "400":
+          $ref: "#/components/responses/InvalidInput"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  # ────────────────────────────────────────────
+  # Collab Auth Validation (BE↔COLLAB)
+  # ────────────────────────────────────────────
+
+  /api/v1/collab/validate:
+    post:
+      tags: [workspaces]
+      summary: 협업 접근 권한 검증 (COLLAB 서버 전용) [planned]
+      operationId: validateCollabAccess
+      description: |
+        COLLAB 서버가 WebSocket 연결 시 BE에 호출하는 내부 엔드포인트.
+        FE에서 직접 호출하지 않는다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollabValidateRequest"
+      responses:
+        "200":
+          description: 접근 허용
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse_CollabValidateResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+# ────────────────────────────────────────────
+# Components
+# ────────────────────────────────────────────
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    workspaceId:
+      name: workspaceId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    canvasId:
+      name: canvasId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    nodeId:
+      name: nodeId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    edgeId:
+      name: edgeId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Unauthorized:
+      description: 인증 실패
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: UNAUTHORIZED
+            message: 인증이 필요합니다
+
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: FORBIDDEN
+            message: 접근 권한이 없습니다
+
+    NotFound:
+      description: 리소스 없음
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: NOT_FOUND
+            message: 리소스를 찾을 수 없습니다
+
+    InvalidInput:
+      description: 잘못된 입력
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+
+    Conflict:
+      description: 리소스 충돌
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            code: CONFLICT
+            message: 이미 존재하는 리소스입니다
+
+  schemas:
+
+    # ── Envelopes ──
+
+    ApiResponse_String:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data: { type: string }
+
+    ApiResponse_Void:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data: { type: "null" }
+
+    ApiResponse_AuthTokens:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/AuthTokens"
+
+    ApiResponse_UserResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/UserResponse"
+
+    ApiResponse_WorkspaceResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/WorkspaceResponse"
+
+    ApiResponse_WorkspaceList:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkspaceResponse"
+
+    ApiResponse_ShareLink:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/ShareLink"
+
+    ApiResponse_CanvasResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/CanvasResponse"
+
+    ApiResponse_CanvasList:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/CanvasResponse"
+
+    ApiResponse_NodeResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/NodeResponse"
+
+    ApiResponse_NodeList:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/NodeResponse"
+
+    ApiResponse_EdgeResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/EdgeResponse"
+
+    ApiResponse_EdgeList:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EdgeResponse"
+
+    ApiResponse_UploadUrlResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/UploadUrlResponse"
+
+    ApiResponse_AssetResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/AssetResponse"
+
+    ApiResponse_CollabValidateResponse:
+      type: object
+      properties:
+        code: { type: string, example: SUCCESS }
+        message: { type: string }
+        data:
+          $ref: "#/components/schemas/CollabValidateResponse"
+
+    ErrorResponse:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties:
+            type: string
+
+    # ── Auth ──
+
+    SignupRequest:
+      type: object
+      required: [email, password, nickname]
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        password:
+          type: string
+          minLength: 8
+          maxLength: 100
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken:
+          type: string
+
+    AuthTokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        tokenType:
+          type: string
+          example: Bearer
+
+    # ── User ──
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateNicknameRequest:
+      type: object
+      required: [nickname]
+      properties:
+        nickname:
+          type: string
+          minLength: 1
+          maxLength: 50
+
+    # ── Workspace ──
+
+    CreateWorkspaceRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    WorkspaceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        ownerId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    ShareLink:
+      type: object
+      properties:
+        shareToken:
+          type: string
+        shareUrl:
+          type: string
+
+    # ── Canvas ──
+
+    CreateCanvasRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+
+    CanvasResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspaceId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # ── Node ──
+
+    NodeType:
+      type: string
+      enum: [document, image, note]
+      description: |
+        - document: PDF 문서 노드
+        - image: 이미지 노드
+        - note: 텍스트 노트 노드
+
+    CreateNodeRequest:
+      type: object
+      required: [type, x, y]
+      properties:
+        type:
+          $ref: "#/components/schemas/NodeType"
+        x:
+          type: number
+          description: 캔버스 내 X 좌표
+        y:
+          type: number
+          description: 캔버스 내 Y 좌표
+        width:
+          type: number
+          default: 300
+        height:
+          type: number
+          default: 200
+        assetId:
+          type: string
+          format: uuid
+          description: document/image 노드일 때 필수
+        content:
+          type: string
+          description: note 노드의 텍스트 내용
+
+    UpdateNodeRequest:
+      type: object
+      properties:
+        x: { type: number }
+        y: { type: number }
+        width: { type: number }
+        height: { type: number }
+        content:
+          type: string
+          description: note 노드 전용
+
+    NodeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        canvasId:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/NodeType"
+        x: { type: number }
+        y: { type: number }
+        width: { type: number }
+        height: { type: number }
+        assetId:
+          type: string
+          format: uuid
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── Edge ──
+
+    CreateEdgeRequest:
+      type: object
+      required: [sourceNodeId, targetNodeId]
+      properties:
+        sourceNodeId:
+          type: string
+          format: uuid
+        targetNodeId:
+          type: string
+          format: uuid
+
+    EdgeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        canvasId:
+          type: string
+          format: uuid
+        sourceNodeId:
+          type: string
+          format: uuid
+        targetNodeId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── Asset ──
+
+    AssetMimeType:
+      type: string
+      enum: [application/pdf, image/png, image/jpeg]
+
+    UploadUrlRequest:
+      type: object
+      required: [filename, mimeType, workspaceId]
+      properties:
+        filename:
+          type: string
+        mimeType:
+          $ref: "#/components/schemas/AssetMimeType"
+        workspaceId:
+          type: string
+          format: uuid
+
+    UploadUrlResponse:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          description: S3 서명된 PUT URL
+        assetKey:
+          type: string
+          description: 업로드 완료 확인 시 사용할 키
+        expiresAt:
+          type: string
+          format: date-time
+
+    ConfirmUploadRequest:
+      type: object
+      required: [assetKey, workspaceId]
+      properties:
+        assetKey:
+          type: string
+        workspaceId:
+          type: string
+          format: uuid
+
+    AssetResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        workspaceId:
+          type: string
+          format: uuid
+        mimeType:
+          $ref: "#/components/schemas/AssetMimeType"
+        url:
+          type: string
+          description: 접근 가능한 에셋 URL
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── Collab Validation ──
+
+    CollabValidateRequest:
+      type: object
+      required: [workspaceId, userId]
+      properties:
+        workspaceId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+
+    CollabValidateResponse:
+      type: object
+      properties:
+        allowed:
+          type: boolean
+        role:
+          type: string
+          enum: [owner, editor, viewer]
