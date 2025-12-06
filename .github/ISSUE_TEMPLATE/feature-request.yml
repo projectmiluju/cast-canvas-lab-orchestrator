@@ -1,0 +1,71 @@
+name: Feature Request
+description: Propose a new cross-repo feature, contract change, or orchestration enhancement
+title: "[FEAT] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What cross-repo problem are we solving?
+      placeholder: We need to ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impacted_repos
+    attributes:
+      label: Impacted Repositories
+      description: List the repositories affected by this work.
+      placeholder: |
+        - cast-canvas-lab-orchestrator
+        - cast-canvas-lab-fe
+        - cast-canvas-lab-be
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      placeholder: Describe the solution at a high level.
+    validations:
+      required: true
+
+  - type: textarea
+    id: contract_changes
+    attributes:
+      label: Contract Or Documentation Changes
+      placeholder: |
+        - contracts/openapi.yaml
+        - contracts/collab-protocol.md
+        - tasks/MASTER_TASKS.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope
+      placeholder: What is intentionally not included?
+    validations:
+      required: true
+
+  - type: input
+    id: branch_name
+    attributes:
+      label: Planned Branch Name
+      description: Must follow `<type>/<issue-number>-<slug>`.
+      placeholder: feat/123-auth-integration-plan
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true

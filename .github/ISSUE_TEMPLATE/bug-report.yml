@@ -1,0 +1,72 @@
+name: Bug Report
+description: Report a reproducible issue in contracts, task tracking, or orchestration workflow
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Briefly describe the problem.
+      placeholder: What is broken or inconsistent?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      placeholder: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      placeholder: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected_docs
+    attributes:
+      label: Affected Docs Or Contracts
+      placeholder: |
+        - CLAUDE.md
+        - contracts/openapi.yaml
+        - tasks/MASTER_TASKS.md
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps To Reproduce
+      placeholder: |
+        1. Open ...
+        2. Compare ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: branch_name
+    attributes:
+      label: Planned Branch Name
+      description: Must follow `<type>/<issue-number>-<slug>`.
+      placeholder: fix/123-task-status-mismatch
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - critical
+        - high
+        - medium
+        - low
+    validations:
+      required: true
