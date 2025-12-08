@@ -1,6 +1,6 @@
 name: Bug Report
 description: Report a reproducible issue in contracts, task tracking, or orchestration workflow
-title: "[BUG] "
+title: "[ORCH][BUG] "
 labels: ["bug"]
 body:
   - type: textarea

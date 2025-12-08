@@ -1,6 +1,6 @@
 name: Feature Request
 description: Propose a new cross-repo feature, contract change, or orchestration enhancement
-title: "[FEAT] "
+title: "[ORCH][FEAT] "
 labels: ["enhancement"]
 body:
   - type: textarea
