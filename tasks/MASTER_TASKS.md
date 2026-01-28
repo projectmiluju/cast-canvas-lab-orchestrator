@@ -58,11 +58,11 @@
 
 | 작업 | 상태 | 비고 |
 |------|------|------|
-| 로그인 페이지 | `[ ]` | `/login` 라우트 |
-| 회원가입 페이지 | `[ ]` | `/signup` 라우트 |
-| 라우터 구조 확장 (auth 라우트 추가) | `[ ]` | |
-| 토큰 저장 및 API 요청 헤더 주입 | `[ ]` | |
-| 로그인 상태 전역 관리 (authStore) | `[ ]` | |
+| 로그인 페이지 | `[ ]` | `/login` 라우트, FE 이슈 #16 |
+| 회원가입 페이지 | `[ ]` | `/signup` 라우트, FE 이슈 #16 |
+| 라우터 구조 확장 (auth 라우트 추가) | `[ ]` | FE 이슈 #16 |
+| 토큰 저장 및 API 요청 헤더 주입 | `[ ]` | FE 이슈 #16 |
+| 로그인 상태 전역 관리 (authStore) | `[ ]` | FE 이슈 #16 |
 
 ### 워크스페이스 UI
 
@@ -105,10 +105,10 @@
 | Common 모듈 (ApiResponse, 에러처리) | `[x]` | |
 | User 엔티티 + 조회/수정 API | `[x]` | |
 | PostgreSQL + Flyway 기반 인프라 | `[x]` | |
-| JWT 토큰 프로바이더 | `[ ]` | |
-| JWT 필터 (SecurityConfig 연동) | `[ ]` | |
-| 회원가입 API (`POST /auth/signup`) | `[ ]` | |
-| 로그인 API (`POST /auth/login`) | `[ ]` | |
+| JWT 토큰 프로바이더 | `[x]` | |
+| JWT 필터 (SecurityConfig 연동) | `[x]` | |
+| 회원가입 API (`POST /auth/signup`) | `[x]` | |
+| 로그인 API (`POST /auth/login`) | `[x]` | |
 | 토큰 갱신 API (`POST /auth/refresh`) | `[ ]` | Redis 필요 |
 | 로그아웃 API (`POST /auth/logout`) | `[ ]` | Redis 필요 |
 | Redis 연동 | `[ ]` | refresh token 저장 |
@@ -202,9 +202,9 @@
 ## 다음 권장 작업
 
 ```
-지금 당장 병렬로 진행 가능:
+지금 당장 병렬로 진행 가능: (ORCH 에픽 #6)
   BE  → Auth 모듈 (JWT + 회원가입/로그인 API, BE 이슈 #4)
-  FE  → 인증 UI (로그인/회원가입 페이지)
+  FE  → 인증 UI (로그인/회원가입 페이지 + authStore, FE 이슈 #16)
 
 둘 다 완료되면:
   통합 I1 → 인증 연동
