@@ -65,7 +65,7 @@ paths:
   /api/v1/auth/signup:
     post:
       tags: [auth]
-      summary: 회원가입 [planned]
+      summary: 회원가입 [implemented]
       operationId: signup
       requestBody:
         required: true
@@ -79,7 +79,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiResponse_AuthTokens"
+                $ref: "#/components/schemas/ApiResponse_UserResponse"
         "400":
           $ref: "#/components/responses/InvalidInput"
         "409":
@@ -88,7 +88,7 @@ paths:
   /api/v1/auth/login:
     post:
       tags: [auth]
-      summary: 로그인 [planned]
+      summary: 로그인 [implemented]
       operationId: login
       requestBody:
         required: true
