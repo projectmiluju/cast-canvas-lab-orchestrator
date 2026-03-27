@@ -28,6 +28,7 @@ Public-facing website for CastCanvas Lab. **Not** the core application.
 - **Maintainability:** Use reusable sections/components. Keep content easy to scan.
 - **Consistency:** Align all public copy with the real system architecture in `ARCHITECTURE.md`.
 - **Vanilla CSS:** Prefer Vanilla CSS for styling (unless Tailwind is explicitly requested).
+- **Brand source of truth:** For the current redesign track, treat `tasks/SITE_FE_BRAND_GUIDE.md` as the shared tone guide and assume `site` is the first repository where the brand direction is finalized.
 
 ## Design System Rules
 
@@ -43,6 +44,7 @@ Public-facing website for CastCanvas Lab. **Not** the core application.
 - **Always read `STATUS.md` before starting work.**
 - **Always update `STATUS.md` after completing work.**
 - Move items from Pending to Completed, add new findings to Pending, update Architecture Decisions if needed.
+- When the task touches the redesign track, keep the result aligned with ORCH 에픽 `#8` and SITE 이슈 `#4`.
 
 ## Avoid
 

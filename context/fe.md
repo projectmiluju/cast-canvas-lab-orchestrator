@@ -96,6 +96,7 @@ Use `docs/` so newly implemented features are discoverable to other agents.
 - Do not use CSS-in-JS libraries (runtime overhead hurts canvas performance)
 - Do not use plain `.css` files for new component styles
 - File naming: `ComponentName.module.scss` co-located with the component file
+- For the current redesign track, use `tasks/SITE_FE_BRAND_GUIDE.md` as the cross-repo tone reference and treat `site` as the upstream source for shared brand direction.
 
 ### Design token system
 
@@ -195,3 +196,4 @@ After changing code:
 - Burying business logic inside JSX
 - Introducing hidden coupling between unrelated features
 - Adding mock data inside production components unless explicitly intended
+- Copying `site` layout or decorative motion directly into the app when it harms density, clarity, or canvas usability
